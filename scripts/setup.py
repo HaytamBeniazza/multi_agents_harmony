@@ -9,23 +9,23 @@ from pathlib import Path
 def check_python_version():
     """Check if Python version is compatible"""
     if sys.version_info < (3, 8):
-        print("❌ Python 3.8 or higher is required")
+        print("ERROR: Python 3.8 or higher is required")
         print(f"Current version: {sys.version}")
         return False
-    print(f"✅ Python version {sys.version_info.major}.{sys.version_info.minor} is compatible")
+    print(f"Python version {sys.version_info.major}.{sys.version_info.minor} is compatible")
     return True
 
 def install_dependencies():
     """Install required dependencies"""
-    print("\n📦 Installing dependencies...")
+    print("\nInstalling dependencies...")
     try:
         result = subprocess.run([
             sys.executable, "-m", "pip", "install", "-r", "requirements.txt"
         ], check=True, capture_output=True, text=True)
-        print("✅ Dependencies installed successfully")
+        print("Dependencies installed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to install dependencies: {e}")
+        print(f"ERROR: Failed to install dependencies: {e}")
         print(f"Error output: {e.stderr}")
         return False
 
@@ -34,10 +34,10 @@ def create_env_file():
     env_file = Path(".env")
     
     if env_file.exists():
-        print("✅ .env file already exists")
+        print(".env file already exists")
         return
     
-    print("\n📝 Creating .env file...")
+    print("\nCreating .env file...")
     
     # Get OpenAI API key from user
     api_key = input("Enter your OpenAI API key (or press Enter to set later): ").strip()
@@ -72,14 +72,14 @@ LOG_FILE=agent_system.log
     with open(env_file, 'w') as f:
         f.write(env_content)
     
-    print("✅ .env file created")
+    print(".env file created")
     
     if not api_key:
-        print("⚠️  Don't forget to add your OpenAI API key to the .env file!")
+        print("WARNING: Don't forget to add your OpenAI API key to the .env file!")
 
 def run_system_check():
     """Run a quick system check"""
-    print("\n🔍 Running system check...")
+    print("\nRunning system check...")
     
     try:
         # Import main modules to check for issues
@@ -90,54 +90,54 @@ def run_system_check():
         config_status = config.validate_config()
         
         if config_status['valid']:
-            print("✅ System configuration is valid")
+            print("System configuration is valid")
         else:
-            print("⚠️  Configuration issues found:")
+            print("WARNING: Configuration issues found:")
             for issue in config_status['issues']:
                 print(f"   • {issue}")
         
         # Try to initialize orchestrator
         orchestrator = AgentOrchestrator()
-        print("✅ Agent orchestrator initialized successfully")
+        print("Agent orchestrator initialized successfully")
         
         return config_status['valid']
         
     except ImportError as e:
-        print(f"❌ Import error: {e}")
+        print(f"ERROR: Import error: {e}")
         return False
     except Exception as e:
-        print(f"❌ System check failed: {e}")
+        print(f"ERROR: System check failed: {e}")
         return False
 
 def display_next_steps(system_ready):
     """Display next steps for the user"""
     print("\n" + "="*60)
-    print("🎉 SETUP COMPLETE!")
+    print("SETUP COMPLETE!")
     print("="*60)
     
     if system_ready:
-        print("\n✅ Your AI Agent System is ready to use!")
-        print("\n🚀 Next steps:")
+        print("\nYour AI Agent System is ready to use!")
+        print("\nNext steps:")
         print("   1. Run the demo: python demo.py")
         print("   2. Start web interface: python web_interface.py")
         print("   3. Open browser to: http://localhost:5000")
     else:
-        print("\n⚠️  Setup completed with some issues.")
-        print("\n🔧 To fix issues:")
+        print("\nSetup completed with some issues.")
+        print("\nTo fix issues:")
         print("   1. Add your OpenAI API key to .env file")
         print("   2. Check all dependencies are installed")
         print("   3. Run: python demo.py to test")
     
-    print("\n📚 Documentation:")
+    print("\nDocumentation:")
     print("   • README.md - Complete project documentation")  
     print("   • demo.py - Interactive demonstration")
     print("   • web_interface.py - Web interface")
     
-    print("\n🤖 Agent Capabilities:")
-    print("   • 🔍 Research Agent - Web search and information gathering")
-    print("   • 📊 Analysis Agent - Data processing and insight generation")
-    print("   • 📝 Content Agent - Professional content creation")
-    print("   • ✅ Quality Agent - Quality assurance and review")
+    print("\nAgent Capabilities:")
+    print("   • Research Agent - Web search and information gathering")
+    print("   • Analysis Agent - Data processing and insight generation")
+    print("   • Content Agent - Professional content creation")
+    print("   • Quality Agent - Quality assurance and review")
 
 def main():
     """Main setup function"""
@@ -154,7 +154,7 @@ def main():
     
     # Install dependencies
     if not install_dependencies():
-        print("\n❌ Setup failed during dependency installation")
+        print("\nERROR: Setup failed during dependency installation")
         sys.exit(1)
     
     # Create environment file

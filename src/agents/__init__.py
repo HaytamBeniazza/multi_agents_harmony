@@ -6,7 +6,7 @@ Each agent is designed to work independently or as part of a collaborative workf
 """
 
 from .base import BaseAgent, AgentStatus, AgentMessage, AgentResult
-from .research import ResearchAgent  
+from .research import ResearchAgent
 from .analysis import AnalysisAgent
 from .content import ContentAgent
 from .quality import QualityAgent
@@ -15,23 +15,24 @@ __version__ = "1.0.0"
 __author__ = "AI Agent Development Team"
 
 __all__ = [
-    'BaseAgent',
-    'AgentStatus', 
-    'AgentMessage',
-    'AgentResult',
-    'ResearchAgent',
-    'AnalysisAgent', 
-    'ContentAgent',
-    'QualityAgent'
+    "BaseAgent",
+    "AgentStatus",
+    "AgentMessage",
+    "AgentResult",
+    "ResearchAgent",
+    "AnalysisAgent",
+    "ContentAgent",
+    "QualityAgent",
 ]
 
 # Agent registry for dynamic loading
 AGENT_REGISTRY = {
-    'research': ResearchAgent,
-    'analysis': AnalysisAgent,
-    'content': ContentAgent,
-    'quality': QualityAgent
+    "research": ResearchAgent,
+    "analysis": AnalysisAgent,
+    "content": ContentAgent,
+    "quality": QualityAgent,
 }
+
 
 def get_agent(agent_type: str):
     """Factory function to get agent by type"""
@@ -40,6 +41,7 @@ def get_agent(agent_type: str):
     else:
         raise ValueError(f"Unknown agent type: {agent_type}")
 
+
 def list_available_agents():
     """List all available agent types"""
-    return list(AGENT_REGISTRY.keys()) 
+    return list(AGENT_REGISTRY.keys())

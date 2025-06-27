@@ -7,4 +7,4 @@ Contains core system components including orchestration, configuration, and util
 from .config import config
 from .orchestrator import AgentOrchestrator
 
-__all__ = ['config', 'AgentOrchestrator'] 
+__all__ = ["config", "AgentOrchestrator"]

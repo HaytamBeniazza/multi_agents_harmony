@@ -1,6 +1,7 @@
 """
 Web Interface for AI Research & Content Creation Team
 """
+
 from flask import Flask, render_template_string, request, jsonify, session
 from flask_cors import CORS
 import asyncio
@@ -18,10 +19,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'ai_agent_demo_key_2024'
+app.secret_key = "ai_agent_demo_key_2024"
 CORS(app)
 
-# Global orchestrator instance  
+# Global orchestrator instance
 orchestrator = AgentOrchestrator()
 
 # Store active workflows
@@ -85,19 +86,19 @@ INDEX_TEMPLATE = """
 
         <div class="agent-grid">
             <div class="agent-card">
-                <h3>🔍 Research Agent</h3>
+                <h3>Research Agent</h3>
                 <p>Searches web for information and gathers relevant data on specified topics using intelligent query generation and content extraction.</p>
             </div>
             <div class="agent-card">
-                <h3>📊 Analysis Agent</h3>
+                <h3>Analysis Agent</h3>
                 <p>Performs deep analytical thinking on research findings, identifies trends, and generates strategic insights with critical reasoning.</p>
             </div>
             <div class="agent-card">
-                <h3>📝 Content Agent</h3>
+                <h3>Content Agent</h3>
                 <p>Creates structured reports and comprehensive content from analyzed data, generating professional documentation.</p>
             </div>
             <div class="agent-card">
-                <h3>✅ Quality Agent</h3>
+                <h3>Quality Agent</h3>
                 <p>Reviews content quality, identifies issues, and provides improvement suggestions to ensure high standards.</p>
             </div>
         </div>
@@ -391,23 +392,25 @@ INDEX_TEMPLATE = """
 </html>
 """
 
-@app.route('/')
+
+@app.route("/")
 def index():
     """Main page"""
     return render_template_string(INDEX_TEMPLATE)
 
-@app.route('/api/start_workflow', methods=['POST'])
+
+@app.route("/api/start_workflow", methods=["POST"])
 def start_workflow():
     """Start a new research workflow"""
     try:
         data = request.get_json()
-        topic = data.get('topic', '')
-        depth = data.get('depth', 'medium')
-        content_type = data.get('content_type', 'comprehensive_report')
-        
+        topic = data.get("topic", "")
+        depth = data.get("depth", "medium")
+        content_type = data.get("content_type", "comprehensive_report")
+
         if not topic:
-            return jsonify({'success': False, 'error': 'Topic is required'})
-        
+            return jsonify({"success": False, "error": "Topic is required"})
+
         # Start workflow in background thread
         def run_workflow():
             loop = asyncio.new_event_loop()
@@ -415,9 +418,7 @@ def start_workflow():
             try:
                 result = loop.run_until_complete(
                     orchestrator.execute_research_workflow(
-                        topic=topic,
-                        depth=depth,
-                        content_type=content_type
+                        topic=topic, depth=depth, content_type=content_type
                     )
                 )
                 active_workflows[result.workflow_id] = result
@@ -425,110 +426,120 @@ def start_workflow():
                 logger.error(f"Workflow failed: {str(e)}")
             finally:
                 loop.close()
-        
+
         # Create a temporary workflow entry
         import uuid
+
         workflow_id = str(uuid.uuid4())
         active_workflows[workflow_id] = {
-            'status': 'running',
-            'topic': topic,
-            'current_step': 1,
-            'start_time': time.time()
+            "status": "running",
+            "topic": topic,
+            "current_step": 1,
+            "start_time": time.time(),
         }
-        
+
         # Start workflow thread
         thread = threading.Thread(target=run_workflow)
         thread.daemon = True
         thread.start()
-        
-        return jsonify({
-            'success': True,
-            'workflow_id': workflow_id,
-            'message': 'Workflow started successfully'
-        })
-        
+
+        return jsonify(
+            {
+                "success": True,
+                "workflow_id": workflow_id,
+                "message": "Workflow started successfully",
+            }
+        )
+
     except Exception as e:
         logger.error(f"Error starting workflow: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({"success": False, "error": str(e)})
 
-@app.route('/api/workflow_status/<workflow_id>')
+
+@app.route("/api/workflow_status/<workflow_id>")
 def get_workflow_status(workflow_id):
     """Get workflow status"""
     try:
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
-            
+
             # If it's a WorkflowResult object
-            if hasattr(workflow, 'status'):
-                return jsonify({
-                    'success': True,
-                    'status': {
-                        'status': workflow.status.value,
-                        'current_step': 4 if workflow.status.value == 'completed' else 4,
-                        'topic': workflow.topic
+            if hasattr(workflow, "status"):
+                return jsonify(
+                    {
+                        "success": True,
+                        "status": {
+                            "status": workflow.status.value,
+                            "current_step": 4 if workflow.status.value == "completed" else 4,
+                            "topic": workflow.topic,
+                        },
                     }
-                })
+                )
             # If it's a dict (temporary entry)
             else:
-                return jsonify({
-                    'success': True,
-                    'status': workflow
-                })
+                return jsonify({"success": True, "status": workflow})
         else:
-            return jsonify({'success': False, 'error': 'Workflow not found'})
-            
+            return jsonify({"success": False, "error": "Workflow not found"})
+
     except Exception as e:
         logger.error(f"Error getting workflow status: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({"success": False, "error": str(e)})
 
-@app.route('/api/workflow_results/<workflow_id>')
+
+@app.route("/api/workflow_results/<workflow_id>")
 def get_workflow_results(workflow_id):
     """Get workflow results"""
     try:
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
-            
-            if hasattr(workflow, 'final_output'):
-                return jsonify({
-                    'success': True,
-                    'results': {
-                        'workflow_id': workflow.workflow_id,
-                        'status': workflow.status.value,
-                        'topic': workflow.topic,
-                        'final_output': workflow.final_output,
-                        'execution_time': workflow.total_execution_time
+
+            if hasattr(workflow, "final_output"):
+                return jsonify(
+                    {
+                        "success": True,
+                        "results": {
+                            "workflow_id": workflow.workflow_id,
+                            "status": workflow.status.value,
+                            "topic": workflow.topic,
+                            "final_output": workflow.final_output,
+                            "execution_time": workflow.total_execution_time,
+                        },
                     }
-                })
+                )
             else:
-                return jsonify({'success': False, 'error': 'Results not ready yet'})
+                return jsonify({"success": False, "error": "Results not ready yet"})
         else:
-            return jsonify({'success': False, 'error': 'Workflow not found'})
-            
+            return jsonify({"success": False, "error": "Workflow not found"})
+
     except Exception as e:
         logger.error(f"Error getting workflow results: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({"success": False, "error": str(e)})
 
-@app.route('/api/agent_capabilities')
+
+@app.route("/api/agent_capabilities")
 def get_agent_capabilities():
     """Get agent capabilities"""
     try:
         capabilities = orchestrator.get_agent_capabilities()
-        return jsonify({'success': True, 'capabilities': capabilities})
+        return jsonify({"success": True, "capabilities": capabilities})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({"success": False, "error": str(e)})
 
-@app.route('/api/system_metrics')
+
+@app.route("/api/system_metrics")
 def get_system_metrics():
     """Get system metrics"""
     try:
         metrics = orchestrator.get_system_metrics()
-        return jsonify({'success': True, 'metrics': metrics})
+        return jsonify({"success": True, "metrics": metrics})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({"success": False, "error": str(e)})
 
-if __name__ == '__main__':
-    print(f"""
-    🚀 AI Research & Content Creation Team - Web Interface
+
+if __name__ == "__main__":
+    print(
+        f"""
+    AI Research & Content Creation Team - Web Interface
     
     🌐 Access the system at: http://{config.FLASK_HOST}:{config.FLASK_PORT}
     
@@ -539,10 +550,7 @@ if __name__ == '__main__':
     • Quality assurance and review
     
     ⚡ Ready to demonstrate Level 4 AI capabilities!
-    """)
-    
-    app.run(
-        host=config.FLASK_HOST,
-        port=config.FLASK_PORT,
-        debug=config.FLASK_DEBUG
-    ) 
+    """
+    )
+
+    app.run(host=config.FLASK_HOST, port=config.FLASK_PORT, debug=config.FLASK_DEBUG)

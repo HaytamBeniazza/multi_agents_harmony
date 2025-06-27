@@ -7,7 +7,7 @@ from orchestrator import AgentOrchestrator
 
 async def basic_example():
     """Basic example of using the AI agent system"""
-    print("🤖 AI Research & Content Creation Team - Basic Example")
+    print("AI Research & Content Creation Team - Basic Example")
     print("=" * 55)
     
     # Initialize the orchestrator
@@ -20,7 +20,7 @@ async def basic_example():
     
     # Execute the workflow
     print("\n3. Executing multi-agent workflow...")
-    print("   🔍 Research Agent → 📊 Analysis Agent → 📝 Content Agent → ✅ Quality Agent")
+    print("   Research Agent → Analysis Agent → Content Agent → Quality Agent")
     
     try:
         result = await orchestrator.execute_research_workflow(
@@ -30,14 +30,14 @@ async def basic_example():
         )
         
         # Display results
-        print(f"\n4. ✅ Workflow completed successfully!")
-        print(f"   ⏱️  Execution time: {result.total_execution_time:.2f} seconds")
+        print(f"\n4. Workflow completed successfully!")
+        print(f"   Execution time: {result.total_execution_time:.2f} seconds")
         
         # Extract key metrics
         final_output = result.final_output
         metadata = final_output.get('workflow_metadata', {})
         
-        print(f"\n5. 📊 Results Summary:")
+        print(f"\n5. Results Summary:")
         print(f"   • Sources analyzed: {metadata.get('total_sources_analyzed', 0)}")
         print(f"   • Recommendations: {metadata.get('total_recommendations', 0)}")
         print(f"   • Word count: {metadata.get('final_word_count', 0)}")
@@ -49,7 +49,7 @@ async def basic_example():
         exec_summary = final_content.get('executive_summary', {})
         
         if exec_summary.get('content'):
-            print(f"\n6. 📝 Executive Summary Preview:")
+            print(f"\n6. Executive Summary Preview:")
             preview = exec_summary['content'][:200] + "..." if len(exec_summary['content']) > 200 else exec_summary['content']
             print(f"   {preview}")
         
@@ -58,11 +58,11 @@ async def basic_example():
         recommendations = analysis_phase.get('recommendations', [])
         
         if recommendations:
-            print(f"\n7. 💡 Top Recommendations:")
+            print(f"\n7. Top Recommendations:")
             for i, rec in enumerate(recommendations[:3], 1):
                 print(f"   {i}. {rec.get('action', 'N/A')} (Priority: {rec.get('priority', 'Medium')})")
         
-        print(f"\n8. 🎉 Example completed successfully!")
+        print(f"\n8. Example completed successfully!")
         
         # Optional: Save results to file
         save_results = input("\nWould you like to save results to file? (y/n): ").lower().startswith('y')
@@ -77,10 +77,10 @@ async def basic_example():
                     'timestamp': result.timestamp.isoformat()
                 }, f, indent=2, default=str)
             
-            print(f"✅ Results saved to: {filename}")
+            print(f"Results saved to: {filename}")
         
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nERROR: {str(e)}")
         print("Make sure you have:")
         print("   1. Set OPENAI_API_KEY in your environment")
         print("   2. Installed all dependencies (pip install -r requirements.txt)")
