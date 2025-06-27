@@ -162,7 +162,7 @@ class ResearchAgent(BaseAgent):
         self, results: List[Dict[str, Any]], topic: str
     ) -> Dict[str, Any]:
         """Process and extract relevant content from search results"""
-        processed_content = {
+        processed_content: Dict[str, Any] = {
             "key_points": [],
             "statistics": [],
             "expert_opinions": [],
