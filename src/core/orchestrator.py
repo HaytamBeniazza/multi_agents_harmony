@@ -6,7 +6,7 @@ import asyncio
 import time
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, cast
 from dataclasses import dataclass
 from enum import Enum
 
@@ -77,7 +77,7 @@ class AgentOrchestrator:
 
         logger.info(f"Starting research workflow {workflow_id} for topic: {topic}")
 
-        workflow_data = {
+        workflow_data: Dict[str, Any] = {
             "id": workflow_id,
             "topic": topic,
             "status": WorkflowStatus.INITIALIZED,
@@ -102,7 +102,8 @@ class AgentOrchestrator:
             }
 
             research_result = await self.research_agent.process(research_input)
-            workflow_data["agent_results"]["research"] = research_result
+            agent_results = cast(Dict[str, AgentResult], workflow_data["agent_results"])
+            agent_results["research"] = research_result
 
             if research_result.status != AgentStatus.COMPLETED:
                 raise Exception(
@@ -120,7 +121,7 @@ class AgentOrchestrator:
             }
 
             analysis_result = await self.analysis_agent.process(analysis_input)
-            workflow_data["agent_results"]["analysis"] = analysis_result
+            agent_results["analysis"] = analysis_result
 
             if analysis_result.status != AgentStatus.COMPLETED:
                 raise Exception(
@@ -140,7 +141,7 @@ class AgentOrchestrator:
             }
 
             content_result = await self.content_agent.process(content_input)
-            workflow_data["agent_results"]["content"] = content_result
+            agent_results["content"] = content_result
 
             if content_result.status != AgentStatus.COMPLETED:
                 raise Exception(
@@ -158,7 +159,7 @@ class AgentOrchestrator:
             }
 
             quality_result = await self.quality_agent.process(quality_input)
-            workflow_data["agent_results"]["quality"] = quality_result
+            agent_results["quality"] = quality_result
 
             if quality_result.status != AgentStatus.COMPLETED:
                 raise Exception(
@@ -187,7 +188,7 @@ class AgentOrchestrator:
                 status=WorkflowStatus.COMPLETED,
                 topic=topic,
                 final_output=final_output,
-                agent_results=workflow_data["agent_results"],
+                agent_results=cast(Dict[str, AgentResult], workflow_data["agent_results"]),
                 execution_summary=execution_summary,
                 total_execution_time=time.time() - start_time,
                 timestamp=datetime.now(),
@@ -206,7 +207,7 @@ class AgentOrchestrator:
 
             # Return partial results if available
             partial_output = self._compile_partial_output(
-                workflow_data.get("agent_results", {}), str(e)
+                cast(Dict[str, AgentResult], workflow_data.get("agent_results", {})), str(e)
             )
 
             return WorkflowResult(
@@ -214,7 +215,7 @@ class AgentOrchestrator:
                 status=WorkflowStatus.FAILED,
                 topic=topic,
                 final_output=partial_output,
-                agent_results=workflow_data.get("agent_results", {}),
+                agent_results=cast(Dict[str, AgentResult], workflow_data.get("agent_results", {})),
                 execution_summary={
                     "error": str(e),
                     "failed_at_step": workflow_data.get("current_step", 0),
@@ -289,7 +290,7 @@ class AgentOrchestrator:
 
     def _generate_execution_summary(self, workflow_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate execution summary with metrics"""
-        agent_results = workflow_data["agent_results"]
+        agent_results = cast(Dict[str, AgentResult], workflow_data["agent_results"])
 
         return {
             "workflow_id": workflow_data["id"],

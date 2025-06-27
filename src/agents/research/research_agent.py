@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 import requests
 from bs4 import BeautifulSoup
-import newspaper
+import feedparser
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 

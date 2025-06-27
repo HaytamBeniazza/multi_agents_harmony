@@ -34,10 +34,11 @@ AGENT_REGISTRY = {
 }
 
 
-def get_agent(agent_type: str):
+def get_agent(agent_type: str) -> BaseAgent:
     """Factory function to get agent by type"""
     if agent_type in AGENT_REGISTRY:
-        return AGENT_REGISTRY[agent_type]()
+        agent_class = AGENT_REGISTRY[agent_type]
+        return agent_class()
     else:
         raise ValueError(f"Unknown agent type: {agent_type}")
 
