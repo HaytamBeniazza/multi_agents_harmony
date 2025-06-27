@@ -1,0 +1,19 @@
+# Production Requirements
+# Optimized for production deployment
+
+-r base.txt
+
+# Production Web Server
+gunicorn>=21.2.0
+gevent>=22.10.0
+
+# Monitoring & Logging
+sentry-sdk>=1.29.0
+prometheus-client>=0.17.0
+
+# Performance
+redis>=4.6.0
+celery>=5.3.0
+
+# Security
+cryptography>=41.0.0 
