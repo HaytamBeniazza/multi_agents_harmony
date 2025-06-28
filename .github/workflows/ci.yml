@@ -41,7 +41,7 @@ jobs:
     
     - name: Format check with black
       run: |
-        black --check src/ tests/
+        black --check --line-length=130 src/ tests/
     
     - name: Type check with mypy
       run: |
