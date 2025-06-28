@@ -118,29 +118,28 @@ Return only the search queries, one per line."""
 
     async def _web_search(self, query: str) -> List[Dict[str, Any]]:
         """Perform web search for a given query"""
-        # Simulate web search (in real implementation, use search APIs like Google, Bing, etc.)
-        # For demo purposes, using a mock implementation
-
+        # NOTE: This is a DEMO/SIMULATION implementation
+        # In production, integrate with real search APIs (Google, Bing, DuckDuckGo, etc.)
+        
         try:
-            # This is a simplified search simulation
-            # In production, integrate with actual search APIs
+            # Demo simulation with clearly marked placeholder sources
             mock_results = [
                 {
-                    "title": f"Research on {query} - Academic Source",
-                    "url": f"https://academic-source.com/search?q={quote(query)}",
-                    "snippet": f"Comprehensive research findings on {query} from academic sources...",
+                    "title": f"Academic Research: {query}",
+                    "url": "[DEMO] Academic source simulation - no real URL",
+                    "snippet": f"Comprehensive research findings on {query} from academic literature and studies...",
                     "source_type": "academic",
                 },
                 {
-                    "title": f"{query} - Industry Report",
-                    "url": f"https://industry-report.com/topics/{quote(query)}",
-                    "snippet": f"Industry insights and analysis on {query} with current trends...",
+                    "title": f"Industry Analysis: {query}",
+                    "url": "[DEMO] Industry report simulation - no real URL", 
+                    "snippet": f"Industry insights and market analysis on {query} with current trends and data...",
                     "source_type": "industry",
                 },
                 {
-                    "title": f"News about {query}",
-                    "url": f"https://news-source.com/articles/{quote(query)}",
-                    "snippet": f"Latest news and developments regarding {query}...",
+                    "title": f"News Coverage: {query}",
+                    "url": "[DEMO] News source simulation - no real URL",
+                    "snippet": f"Latest news and developments regarding {query} from various media outlets...",
                     "source_type": "news",
                 },
             ]
@@ -148,7 +147,7 @@ Return only the search queries, one per line."""
             return mock_results
 
         except Exception as e:
-            self.logger.error(f"Web search failed for query '{query}': {str(e)}")
+            self.logger.error(f"Web search simulation failed for query '{query}': {str(e)}")
             return []
 
     async def _process_search_results(self, results: List[Dict[str, Any]], topic: str) -> Dict[str, Any]:
