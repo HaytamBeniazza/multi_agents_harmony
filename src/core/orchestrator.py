@@ -318,9 +318,12 @@ class AgentOrchestrator:
                     ).output.get("sources", [])
                 ),
                 "analysis_insights": len(
-                    str(agent_results.get(
-                        "analysis", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                    ).output.get("analytical_insights", {}))
+                    str(
+                        agent_results.get(
+                            "analysis",
+                            AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now()),
+                        ).output.get("analytical_insights", {})
+                    )
                 ),
                 "content_word_count": agent_results.get(
                     "content", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
