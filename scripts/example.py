@@ -3,7 +3,13 @@ Simple Example: AI Research & Content Creation Team
 """
 import asyncio
 import json
-from orchestrator import AgentOrchestrator
+import sys
+import os
+
+# Add the src directory to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from core.orchestrator import AgentOrchestrator
 
 async def basic_example():
     """Basic example of using the AI agent system"""
@@ -45,7 +51,7 @@ async def basic_example():
         
         # Show a sample of the generated content
         content_phase = final_output.get('content_phase', {})
-        final_content = content_phase.get('final_content', {})
+        final_content = content_phase.get('report_content', content_phase.get('final_content', {}))
         exec_summary = final_content.get('executive_summary', {})
         
         if exec_summary.get('content'):

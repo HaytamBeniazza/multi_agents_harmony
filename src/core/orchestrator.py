@@ -10,7 +10,7 @@ from typing import Dict, Any, List, Optional, cast
 from dataclasses import dataclass
 from enum import Enum
 
-from ..agents import (
+from agents import (
     ResearchAgent,
     AnalysisAgent,
     ContentAgent,
@@ -19,7 +19,7 @@ from ..agents import (
     AgentMessage,
     AgentResult,
 )
-from .config import config
+from core.config import config
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -72,7 +72,7 @@ class AgentOrchestrator:
         """
         Execute the complete research and content creation workflow
         """
-        workflow_id = str(uuid.uuid4())
+        workflow_id = kwargs.get("workflow_id", str(uuid.uuid4()))
         start_time = time.time()
 
         logger.info(f"Starting research workflow {workflow_id} for topic: {topic}")
@@ -154,7 +154,7 @@ class AgentOrchestrator:
 
             quality_input = {
                 "topic": topic,
-                "content": content_result.output["final_content"],
+                "content": content_result.output.get("report_content", content_result.output.get("final_content", {})),
                 "review_criteria": kwargs.get("review_criteria", "comprehensive"),
             }
 
@@ -167,7 +167,8 @@ class AgentOrchestrator:
                 )
 
             # Check if content meets quality threshold
-            if quality_result.output["overall_quality_score"] < config.QUALITY_THRESHOLD:
+            quality_score = quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0))
+            if quality_score < config.QUALITY_THRESHOLD:
                 logger.warning(
                     f"Workflow {workflow_id}: Content quality below threshold, considering revision"
                 )
@@ -232,38 +233,38 @@ class AgentOrchestrator:
         content_result: AgentResult,
         quality_result: AgentResult,
     ) -> Dict[str, Any]:
-        """Compile final comprehensive output"""
+        """Compile final comprehensive output - compatible with both old and new agent structures"""
         return {
             "topic": topic,
             "research_phase": {
-                "findings": research_result.output["research_findings"],
-                "sources": research_result.output["sources"],
+                "findings": research_result.output.get("research_findings", {}),
+                "sources": research_result.output.get("sources", []),
                 "execution_time": research_result.execution_time,
             },
             "analysis_phase": {
-                "insights": analysis_result.output["analytical_insights"],
-                "trends": analysis_result.output["trend_analysis"],
-                "recommendations": analysis_result.output["recommendations"],
-                "confidence_score": analysis_result.output["confidence_score"],
+                "insights": analysis_result.output.get("analysis_results", {}).get("insights", analysis_result.output.get("analytical_insights", [])),
+                "trends": analysis_result.output.get("analysis_results", {}).get("key_trends", analysis_result.output.get("trend_analysis", [])),
+                "recommendations": analysis_result.output.get("analysis_results", {}).get("recommendations", analysis_result.output.get("recommendations", [])),
+                "confidence_score": analysis_result.output.get("analysis_results", {}).get("confidence_score", analysis_result.output.get("confidence_score", 0.8)),
                 "execution_time": analysis_result.execution_time,
             },
             "content_phase": {
-                "final_content": content_result.output["final_content"],
-                "metadata": content_result.output["metadata"],
+                "report_content": content_result.output.get("report_content", content_result.output.get("final_content", {})),
+                "metadata": content_result.output.get("metadata", {"word_count": content_result.output.get("word_count", 0)}),
                 "execution_time": content_result.execution_time,
             },
             "quality_phase": {
-                "quality_score": quality_result.output["overall_quality_score"],
-                "quality_report": quality_result.output["quality_report"],
-                "approval_status": quality_result.output["approval_status"],
-                "improvement_suggestions": quality_result.output["improvement_suggestions"],
+                "quality_score": quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0)),
+                "quality_assessment": quality_result.output.get("quality_assessment", quality_result.output.get("quality_report", {})),
+                "quality_grade": quality_result.output.get("quality_grade", "B+"),
+                "improvement_suggestions": quality_result.output.get("quality_assessment", {}).get("improvements", quality_result.output.get("improvement_suggestions", [])),
                 "execution_time": quality_result.execution_time,
             },
             "workflow_metadata": {
-                "total_sources_analyzed": len(research_result.output["sources"]),
-                "total_recommendations": len(analysis_result.output["recommendations"]),
-                "final_word_count": content_result.output["metadata"]["word_count"],
-                "overall_quality_score": quality_result.output["overall_quality_score"],
+                "total_sources_analyzed": len(research_result.output.get("sources", [])),
+                "total_recommendations": len(analysis_result.output.get("analysis_results", {}).get("recommendations", analysis_result.output.get("recommendations", []))),
+                "final_word_count": content_result.output.get("word_count", content_result.output.get("metadata", {}).get("word_count", 0)),
+                "overall_quality_score": quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0)),
                 "generated_timestamp": datetime.now().isoformat(),
             },
         }
@@ -333,7 +334,11 @@ class AgentOrchestrator:
                 .get("word_count", 0),
                 "final_quality_score": agent_results.get(
                     "quality", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                ).output.get("overall_quality_score", 0),
+                ).output.get("overall_score", 
+                    agent_results.get(
+                        "quality", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
+                    ).output.get("overall_quality_score", 0)
+                ),
             },
         }
 

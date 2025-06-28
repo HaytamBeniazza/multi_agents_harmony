@@ -322,45 +322,66 @@ INDEX_TEMPLATE = """
         function formatReportContent(text) {
             if (!text) return '<p>No content available</p>';
             
-            // Simple text cleaning without regex - just remove backticks
-            while (text.indexOf('```') !== -1) {
-                text = text.replace('```', '');
-            }
-            
-            // Split text into paragraphs using actual newlines
-            const paragraphs = text.split('\\n\\n');
-            let formatted = '';
-            
-            for (let i = 0; i < paragraphs.length; i++) {
-                const para = paragraphs[i].trim();
-                if (para) {
-                    formatted += '<p style="margin: 15px 0; text-align: justify; line-height: 1.6; color: #374151;">' + para + '</p>';
+            // Remove code blocks using string methods instead of regex to avoid syntax errors
+            while (text.includes('```')) {
+                let start = text.indexOf('```');
+                let end = text.indexOf('```', start + 3);
+                if (end === -1) {
+                    // If no closing backticks, remove from start to end
+                    text = text.substring(0, start) + text.substring(start + 3);
+                } else {
+                    // Remove the entire code block
+                    text = text.substring(0, start) + text.substring(end + 3);
                 }
             }
             
-            return formatted || '<p>Content formatting in progress...</p>';
-        }
-
-        function generateQualityTab(results) {
-            const quality = results.quality_phase || {};
-            const score = quality.quality_score || 0;
-            const issues = quality.identified_issues || [];
-            const suggestions = quality.improvement_suggestions || [];
-            const feedback = quality.feedback || '';
+            // Clean up any remaining formatting
+            text = text.replace(/^\s*text\s*/gm, '');
             
-            return `
-                <h3>Quality Assessment</h3>
-                <div class="metric-card">
-                    <div class="metric-value">${score.toFixed(1)}/100</div>
-                    <div class="metric-label">Overall Quality Score</div>
-                </div>
-                <h4>Quality Feedback:</h4>
-                <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">${feedback || 'No feedback available'}</p>
-                <h4>Issues Identified:</h4>
-                <ul>${issues.map(issue => `<li>${issue}</li>`).join('')}</ul>
-                <h4>Improvement Suggestions:</h4>
-                <ul>${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}</ul>
-            `;
+            // Split into paragraphs and format
+            let formatted = text
+                .split(/\n\s*\n/)
+                .map(paragraph => {
+                    if (!paragraph.trim()) return '';
+                    
+                    // Handle headers (lines starting with **text** or #)
+                    if (paragraph.trim().startsWith('**') && paragraph.includes('**')) {
+                        const headerText = paragraph.replace(/\*\*/g, '').trim();
+                        return `<h3 style="color: #1e40af; margin: 25px 0 15px 0; font-size: 20px; font-weight: 600; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">${headerText}</h3>`;
+                    }
+                    
+                    if (paragraph.trim().startsWith('#')) {
+                        const headerText = paragraph.replace(/#+\s*/, '').trim();
+                        return `<h3 style="color: #1e40af; margin: 25px 0 15px 0; font-size: 20px; font-weight: 600; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">${headerText}</h3>`;
+                    }
+                    
+                    // Handle bullet points
+                    if (paragraph.includes('•') || paragraph.includes('- ') || paragraph.includes('* ')) {
+                        const bullets = paragraph.split('\n')
+                            .filter(line => line.trim())
+                            .map(line => {
+                                const cleanLine = line.replace(/^[\s]*[•\-\*]\s*/, '').trim();
+                                if (cleanLine) {
+                                    return `<li style="margin-bottom: 8px; color: #374151;">${cleanLine}</li>`;
+                                }
+                                return '';
+                            })
+                            .filter(line => line)
+                            .join('');
+                        return `<ul style="margin: 15px 0; padding-left: 20px; list-style-type: disc;">${bullets}</ul>`;
+                    }
+                    
+                    // Regular paragraphs
+                    const cleanParagraph = paragraph.trim();
+                    if (cleanParagraph) {
+                        return `<p style="margin: 15px 0; text-align: justify; line-height: 1.6; color: #374151;">${cleanParagraph}</p>`;
+                    }
+                    return '';
+                })
+                .filter(item => item)
+                .join('');
+            
+            return formatted || '<p>Content formatting in progress...</p>';
         }
 
         document.getElementById('researchForm').addEventListener('submit', async function(e) {

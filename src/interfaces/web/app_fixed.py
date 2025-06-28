@@ -1,5 +1,5 @@
 """
-Web Interface for AI Research & Content Creation Team
+Web Interface for AI Research & Content Creation Team - FIXED VERSION
 """
 
 import sys
@@ -80,7 +80,8 @@ INDEX_TEMPLATE = """
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .example-topics { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 10px; }
         .example-topics h4 { margin-bottom: 10px; color: #1976d2; }
-        .topic-tag { display: inline-block; background: #1976d2; color: white; padding: 4px 8px; margin: 2px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+        .topic-tag { display: inline-block; background: #1976d2; color: white; padding: 6px 12px; margin: 4px; border-radius: 6px; font-size: 0.9em; cursor: pointer; transition: background 0.2s; }
+        .topic-tag:hover { background: #1565c0; }
     </style>
 </head>
 <body>
@@ -169,15 +170,19 @@ INDEX_TEMPLATE = """
         let currentWorkflowId = null;
         let currentResults = null;
 
-        // Define setTopic function robustly to work with onclick handlers
+        // Define setTopic function to work with onclick handlers
         function setTopic(topic) {
+            console.log('setTopic called with:', topic);
             const topicInput = document.getElementById('topic');
             if (topicInput) {
                 topicInput.value = topic;
+                console.log('Topic set successfully:', topic);
+            } else {
+                console.error('Topic input field not found');
             }
         }
         
-        // Also define it on window object for global access
+        // Make it globally available
         window.setTopic = setTopic;
 
         function showTab(tabName) {
@@ -210,38 +215,21 @@ INDEX_TEMPLATE = """
 
         function generateSummaryTab(results) {
             const metadata = results.workflow_metadata || {};
-            return `
-                <div class="metric-card">
-                    <div class="metric-value">${metadata.total_sources_analyzed || 0}</div>
-                    <div class="metric-label">Sources Analyzed</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${metadata.total_recommendations || 0}</div>
-                    <div class="metric-label">Recommendations Generated</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${metadata.final_word_count || 0}</div>
-                    <div class="metric-label">Final Word Count</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-value">${(metadata.overall_quality_score || 0).toFixed(2)}</div>
-                    <div class="metric-label">Quality Score</div>
-                </div>
-            `;
+            return '<div class="metric-card"><div class="metric-value">' + (metadata.total_sources_analyzed || 0) + '</div><div class="metric-label">Sources Analyzed</div></div>' +
+                   '<div class="metric-card"><div class="metric-value">' + (metadata.total_recommendations || 0) + '</div><div class="metric-label">Recommendations Generated</div></div>' +
+                   '<div class="metric-card"><div class="metric-value">' + (metadata.final_word_count || 0) + '</div><div class="metric-label">Final Word Count</div></div>' +
+                   '<div class="metric-card"><div class="metric-value">' + ((metadata.overall_quality_score || 0).toFixed(2)) + '</div><div class="metric-label">Quality Score</div></div>';
         }
 
         function generateResearchTab(results) {
             const research = results.research_phase || {};
             const findings = research.findings || {};
-            return `
-                <h3>Research Findings</h3>
-                <h4>Main Findings:</h4>
-                <ul>${(findings.main_findings || []).map(f => `<li>${f}</li>`).join('')}</ul>
-                <h4>Current Trends:</h4>
-                <ul>${(findings.key_trends || []).map(t => `<li>${t}</li>`).join('')}</ul>
-                <h4>Sources:</h4>
-                <ul>${(research.sources || []).map(s => `<li><a href="${s}" target="_blank">${s}</a></li>`).join('')}</ul>
-            `;
+            return '<h3>Research Findings</h3><h4>Main Findings:</h4><ul>' + 
+                   (findings.main_findings || []).map(f => '<li>' + f + '</li>').join('') + 
+                   '</ul><h4>Current Trends:</h4><ul>' + 
+                   (findings.key_trends || []).map(t => '<li>' + t + '</li>').join('') + 
+                   '</ul><h4>Sources:</h4><ul>' + 
+                   (research.sources || []).map(s => '<li><a href="' + s + '" target="_blank">' + s + '</a></li>').join('') + '</ul>';
         }
 
         function generateAnalysisTab(results) {
@@ -249,96 +237,37 @@ INDEX_TEMPLATE = """
             const insights = analysis.insights || [];
             const recommendations = analysis.recommendations || [];
             const trends = analysis.trends || [];
-            return `
-                <h3>Analysis Results</h3>
-                <h4>Key Insights:</h4>
-                <ul>${insights.map(i => `<li>${i}</li>`).join('')}</ul>
-                <h4>Key Trends:</h4>
-                <ul>${trends.map(t => `<li>${t}</li>`).join('')}</ul>
-                <h4>Recommendations:</h4>
-                <ul>${recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
-                <div class="metric-card">
-                    <div class="metric-value">${(analysis.confidence_score || 0).toFixed(2)}</div>
-                    <div class="metric-label">Confidence Score</div>
-                </div>
-            `;
+            return '<h3>Analysis Results</h3><h4>Key Insights:</h4><ul>' + 
+                   insights.map(i => '<li>' + i + '</li>').join('') + 
+                   '</ul><h4>Key Trends:</h4><ul>' + 
+                   trends.map(t => '<li>' + t + '</li>').join('') + 
+                   '</ul><h4>Recommendations:</h4><ul>' + 
+                   recommendations.map(rec => '<li>' + rec + '</li>').join('') + 
+                   '</ul><div class="metric-card"><div class="metric-value">' + 
+                   ((analysis.confidence_score || 0).toFixed(2)) + '</div><div class="metric-label">Confidence Score</div></div>';
         }
 
         function generateContentTab(results) {
             const content = results.content_phase || {};
             const finalContent = content.report_content || content.final_content || {};
-            const metadata = finalContent.metadata || {};
-            
-            // Convert the report text to properly formatted HTML
             const reportText = finalContent.full_report || 'No content available';
             const formattedReport = formatReportContent(reportText);
             
-            return `
-                <div style="max-width: 900px; margin: 0 auto;">
-                    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                        <div class="metric-card">
-                            <div class="metric-value">${content.metadata?.word_count || 0}</div>
-                            <div class="metric-label">Word Count</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${finalContent.sections?.length || 0}</div>
-                            <div class="metric-label">Sections</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${metadata.quality_level || 'High'}</div>
-                            <div class="metric-label">Quality Level</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; text-align: center;">
-                        <h2 style="margin: 0; font-size: 24px; font-weight: 600;">${finalContent.title || 'Professional Research Report'}</h2>
-                        <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 14px;">Generated by ${metadata.generated_by || 'AI Research Team'}</p>
-                    </div>
-                    
-                    <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-                        <h4 style="color: #1e40af; margin: 0 0 10px 0; font-size: 16px;">📋 Document Structure</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                            ${(finalContent.sections || []).map((section, index) => `
-                                <div style="background: white; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center;">
-                                    <span style="background: #3b82f6; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 10px;">${index + 1}</span>
-                                    <span style="font-weight: 500; color: #334155;">${section}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden;">
-                        <div style="background: #f1f5f9; padding: 15px; border-bottom: 1px solid #e2e8f0;">
-                            <h4 style="margin: 0; color: #334155; font-size: 18px;">📄 Complete Report</h4>
-                        </div>
-                        <div style="padding: 30px; line-height: 1.7; color: #374151; font-family: 'Georgia', serif;">
-                            ${formattedReport}
-                        </div>
-                    </div>
-                </div>
-            `;
+            return '<div style="max-width: 900px; margin: 0 auto;"><div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden;"><div style="background: #f1f5f9; padding: 15px; border-bottom: 1px solid #e2e8f0;"><h4 style="margin: 0; color: #334155; font-size: 18px;">📄 Complete Report</h4></div><div style="padding: 30px; line-height: 1.7; color: #374151; font-family: Georgia, serif;">' + formattedReport + '</div></div></div>';
         }
         
         function formatReportContent(text) {
             if (!text) return '<p>No content available</p>';
             
-            // Simple text cleaning without regex - just remove backticks
-            while (text.indexOf('```') !== -1) {
-                text = text.replace('```', '');
-            }
+            // Simple text cleaning without problematic regex
+            text = text.split('```').join('');
             
-            // Split text into paragraphs using actual newlines
-            const paragraphs = text.split('\\n\\n');
-            let formatted = '';
-            
-            for (let i = 0; i < paragraphs.length; i++) {
-                const para = paragraphs[i].trim();
-                if (para) {
-                    formatted += '<p style="margin: 15px 0; text-align: justify; line-height: 1.6; color: #374151;">' + para + '</p>';
-                }
-            }
-            
-            return formatted || '<p>Content formatting in progress...</p>';
+            // Convert to HTML paragraphs
+            return text.split('\\n\\n').map(para => {
+                para = para.trim();
+                if (!para) return '';
+                return '<p style="margin: 15px 0; text-align: justify; line-height: 1.6; color: #374151;">' + para + '</p>';
+            }).filter(p => p).join('');
         }
 
         function generateQualityTab(results) {
@@ -346,80 +275,74 @@ INDEX_TEMPLATE = """
             const score = quality.quality_score || 0;
             const issues = quality.identified_issues || [];
             const suggestions = quality.improvement_suggestions || [];
-            const feedback = quality.feedback || '';
             
-            return `
-                <h3>Quality Assessment</h3>
-                <div class="metric-card">
-                    <div class="metric-value">${score.toFixed(1)}/100</div>
-                    <div class="metric-label">Overall Quality Score</div>
-                </div>
-                <h4>Quality Feedback:</h4>
-                <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">${feedback || 'No feedback available'}</p>
-                <h4>Issues Identified:</h4>
-                <ul>${issues.map(issue => `<li>${issue}</li>`).join('')}</ul>
-                <h4>Improvement Suggestions:</h4>
-                <ul>${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}</ul>
-            `;
+            return '<h3>Quality Assessment</h3><div class="metric-card"><div class="metric-value">' + score.toFixed(1) + '/100</div><div class="metric-label">Overall Quality Score</div></div><h4>Issues Identified:</h4><ul>' + issues.map(issue => '<li>' + issue + '</li>').join('') + '</ul><h4>Improvement Suggestions:</h4><ul>' + suggestions.map(suggestion => '<li>' + suggestion + '</li>').join('') + '</ul>';
         }
 
-        document.getElementById('researchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            console.log('Form submitted - prevented default behavior');
+        // Form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, setting up form handler');
             
-            const topic = document.getElementById('topic').value;
-            const depth = document.getElementById('depth').value;
-            const contentType = document.getElementById('content_type').value;
-            
-            console.log('Form data:', { topic, depth, contentType });
-            
-            if (!topic.trim()) {
-                alert('Please enter a research topic');
-                return false;
-            }
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const statusSection = document.getElementById('statusSection');
-            const resultsSection = document.getElementById('resultsSection');
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
-            statusSection.style.display = 'block';
-            resultsSection.style.display = 'none';
-            
-            try {
-                console.log('Sending request to /api/start_workflow');
-                const response = await fetch('/api/start_workflow', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic, depth, content_type: contentType })
+            const form = document.getElementById('researchForm');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('Form submitted - prevented default behavior');
+                    
+                    const topic = document.getElementById('topic').value;
+                    const depth = document.getElementById('depth').value;
+                    const contentType = document.getElementById('content_type').value;
+                    
+                    console.log('Form data:', { topic, depth, contentType });
+                    
+                    if (!topic.trim()) {
+                        alert('Please enter a research topic');
+                        return false;
+                    }
+                    
+                    const submitBtn = document.getElementById('submitBtn');
+                    const statusSection = document.getElementById('statusSection');
+                    const resultsSection = document.getElementById('resultsSection');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Processing...';
+                    statusSection.style.display = 'block';
+                    resultsSection.style.display = 'none';
+                    
+                    try {
+                        console.log('Sending request to /api/start_workflow');
+                        const response = await fetch('/api/start_workflow', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ topic, depth, content_type: contentType })
+                        });
+                        
+                        const data = await response.json();
+                        console.log('Response:', data);
+                        
+                        if (data.success) {
+                            currentWorkflowId = data.workflow_id;
+                            console.log('Starting workflow with ID:', currentWorkflowId);
+                            pollWorkflowStatus();
+                        } else {
+                            alert('Error starting workflow: ' + data.error);
+                            resetUI();
+                        }
+                    } catch (error) {
+                        console.error('Request error:', error);
+                        alert('Error: ' + error.message);
+                        resetUI();
+                    }
+                    
+                    return false;
                 });
-                
-                const data = await response.json();
-                console.log('Response:', data);
-                
-                if (data.success) {
-                    currentWorkflowId = data.workflow_id;
-                    console.log('Starting workflow with ID:', currentWorkflowId);
-                    pollWorkflowStatus();
-                } else {
-                    alert('Error starting workflow: ' + data.error);
-                    resetUI();
-                }
-            } catch (error) {
-                console.error('Request error:', error);
-                alert('Error: ' + error.message);
-                resetUI();
             }
-            
-            return false; // Extra safety to prevent form submission
         });
 
         function pollWorkflowStatus() {
-            const statusDiv = document.getElementById('workflowStatus');
             const interval = setInterval(async () => {
                 try {
-                    const response = await fetch(`/api/workflow_status/${currentWorkflowId}`);
+                    const response = await fetch('/api/workflow_status/' + currentWorkflowId);
                     const data = await response.json();
                     
                     if (data.success) {
@@ -452,7 +375,6 @@ INDEX_TEMPLATE = """
                 let statusClass = 'status-pending';
                 
                 if (isCompleted) {
-                    // If workflow is completed, all steps are completed
                     statusClass = 'status-completed';
                 } else if (i < currentStep - 1) {
                     statusClass = 'status-completed';
@@ -460,12 +382,7 @@ INDEX_TEMPLATE = """
                     statusClass = 'status-running';
                 }
                 
-                html += `
-                    <div class="status-item">
-                        <div class="status-icon ${statusClass}"></div>
-                        <span>${steps[i]}</span>
-                    </div>
-                `;
+                html += '<div class="status-item"><div class="status-icon ' + statusClass + '"></div><span>' + steps[i] + '</span></div>';
             }
             
             document.getElementById('workflowStatus').innerHTML = html;
@@ -473,7 +390,7 @@ INDEX_TEMPLATE = """
 
         async function loadResults() {
             try {
-                const response = await fetch(`/api/workflow_results/${currentWorkflowId}`);
+                const response = await fetch('/api/workflow_results/' + currentWorkflowId);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -516,7 +433,6 @@ def start_workflow():
 
         # Create a temporary workflow entry
         import uuid
-
         workflow_id = str(uuid.uuid4())
         active_workflows[workflow_id] = {
             "status": "running",
@@ -535,11 +451,9 @@ def start_workflow():
                         topic=topic, depth=depth, content_type=content_type, workflow_id=workflow_id
                     )
                 )
-                # Update the existing workflow entry with the actual result
                 active_workflows[workflow_id] = result
             except Exception as e:
                 logger.error(f"Workflow failed: {str(e)}")
-                # Update with failure status
                 active_workflows[workflow_id] = {
                     "status": "failed",
                     "topic": topic,
@@ -549,18 +463,15 @@ def start_workflow():
             finally:
                 loop.close()
 
-        # Start workflow thread
         thread = threading.Thread(target=run_workflow)
         thread.daemon = True
         thread.start()
 
-        return jsonify(
-            {
-                "success": True,
-                "workflow_id": workflow_id,
-                "message": "Workflow started successfully",
-            }
-        )
+        return jsonify({
+            "success": True,
+            "workflow_id": workflow_id,
+            "message": "Workflow started successfully",
+        })
 
     except Exception as e:
         logger.error(f"Error starting workflow: {str(e)}")
@@ -574,21 +485,20 @@ def get_workflow_status(workflow_id):
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
 
-            # If it's a WorkflowResult object
             if hasattr(workflow, "status"):
-                return jsonify(
-                    {
-                        "success": True,
-                        "status": {
-                            "status": workflow.status.value,
-                            "current_step": 4 if workflow.status.value == "completed" else 4,
-                            "topic": workflow.topic,
-                        },
+                return jsonify({
+                    "success": True,
+                    "status": {
+                        "status": workflow.status,
+                        "current_step": getattr(workflow, "current_step", 0),
+                        "message": getattr(workflow, "message", ""),
                     }
-                )
-            # If it's a dict (temporary entry)
+                })
             else:
-                return jsonify({"success": True, "status": workflow})
+                return jsonify({
+                    "success": True,
+                    "status": workflow
+                })
         else:
             return jsonify({"success": False, "error": "Workflow not found"})
 
@@ -603,65 +513,37 @@ def get_workflow_results(workflow_id):
     try:
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
-
+            
             if hasattr(workflow, "final_output"):
-                return jsonify(
-                    {
-                        "success": True,
-                        "results": {
-                            "workflow_id": workflow.workflow_id,
-                            "status": workflow.status.value,
-                            "topic": workflow.topic,
-                            "final_output": workflow.final_output,
-                            "execution_time": workflow.total_execution_time,
-                        },
+                return jsonify({
+                    "success": True,
+                    "results": {
+                        "final_output": workflow.final_output,
+                        "status": workflow.status,
+                        "execution_time": getattr(workflow, "execution_time", 0)
                     }
-                )
+                })
             else:
                 return jsonify({"success": False, "error": "Results not ready yet"})
         else:
             return jsonify({"success": False, "error": "Workflow not found"})
-
+            
     except Exception as e:
         logger.error(f"Error getting workflow results: {str(e)}")
         return jsonify({"success": False, "error": str(e)})
 
 
-@app.route("/api/agent_capabilities")
-def get_agent_capabilities():
-    """Get agent capabilities"""
-    try:
-        capabilities = orchestrator.get_agent_capabilities()
-        return jsonify({"success": True, "capabilities": capabilities})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
-
-
-@app.route("/api/system_metrics")
-def get_system_metrics():
-    """Get system metrics"""
-    try:
-        metrics = orchestrator.get_system_metrics()
-        return jsonify({"success": True, "metrics": metrics})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
-
-
 if __name__ == "__main__":
-    print(
-        f"""
-    AI Research & Content Creation Team - Web Interface
+    print("\\n" + "="*50)
+    print("    AI Research & Content Creation Team - Web Interface")
+    print("="*50)
+    print(f"\\n🌐 Access the system at: http://0.0.0.0:5000")
+    print("\\n📋 System Features:")
+    print("• Multi-agent collaboration and reasoning")
+    print("• Intelligent research and analysis") 
+    print("• Professional content generation")
+    print("• Quality assurance and review")
+    print("\\n⚡ Ready to demonstrate Level 4 AI capabilities!")
+    print("="*50 + "\\n")
     
-    🌐 Access the system at: http://{config.FLASK_HOST}:{config.FLASK_PORT}
-    
-    📋 System Features:
-    • Multi-agent collaboration and reasoning
-    • Intelligent research and analysis
-    • Professional content generation  
-    • Quality assurance and review
-    
-    ⚡ Ready to demonstrate Level 4 AI capabilities!
-    """
-    )
-
-    app.run(host=config.FLASK_HOST, port=config.FLASK_PORT, debug=config.FLASK_DEBUG)
+    app.run(host="0.0.0.0", port=5000, debug=True) 

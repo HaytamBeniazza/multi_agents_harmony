@@ -220,7 +220,7 @@ async def main():
 
         # Content preview
         content_phase = final_output.get("content_phase", {})
-        final_content = content_phase.get("final_content", {})
+        final_content = content_phase.get("report_content", content_phase.get("final_content", {}))
         exec_summary = final_content.get("executive_summary", {})
 
         if exec_summary.get("content"):
