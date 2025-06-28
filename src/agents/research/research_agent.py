@@ -5,7 +5,6 @@ Handles web search and information gathering tasks
 
 import time
 from typing import Dict, Any, List
-from urllib.parse import quote
 from datetime import datetime
 
 from agents.base.base_agent import BaseAgent, AgentResult, AgentStatus
