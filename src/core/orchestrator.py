@@ -272,16 +272,17 @@ class AgentOrchestrator:
         self, agent_results: Dict[str, AgentResult], error: str
     ) -> Dict[str, Any]:
         """Compile partial output when workflow fails"""
-        output = {
+        output: Dict[str, Any] = {
             "status": "failed",
             "error": error,
             "completed_phases": list(agent_results.keys()),
             "partial_results": {},
         }
 
+        partial_results = cast(Dict[str, Dict[str, Any]], output["partial_results"])
         for phase, result in agent_results.items():
             if result.status == AgentStatus.COMPLETED:
-                output["partial_results"][phase] = {
+                partial_results[phase] = {
                     "output": result.output,
                     "execution_time": result.execution_time,
                 }

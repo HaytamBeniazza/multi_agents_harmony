@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.secret_key = "ai_agent_demo_key_2024"
 CORS(app)
 
-# Global orchestrator instance
+# Global orchestrator instance  
 orchestrator = AgentOrchestrator()
 
 # Store active workflows
@@ -407,10 +407,10 @@ def start_workflow():
         topic = data.get("topic", "")
         depth = data.get("depth", "medium")
         content_type = data.get("content_type", "comprehensive_report")
-
+        
         if not topic:
             return jsonify({"success": False, "error": "Topic is required"})
-
+        
         # Start workflow in background thread
         def run_workflow():
             loop = asyncio.new_event_loop()
@@ -426,7 +426,7 @@ def start_workflow():
                 logger.error(f"Workflow failed: {str(e)}")
             finally:
                 loop.close()
-
+        
         # Create a temporary workflow entry
         import uuid
 
@@ -437,12 +437,12 @@ def start_workflow():
             "current_step": 1,
             "start_time": time.time(),
         }
-
+        
         # Start workflow thread
         thread = threading.Thread(target=run_workflow)
         thread.daemon = True
         thread.start()
-
+        
         return jsonify(
             {
                 "success": True,
@@ -450,7 +450,7 @@ def start_workflow():
                 "message": "Workflow started successfully",
             }
         )
-
+        
     except Exception as e:
         logger.error(f"Error starting workflow: {str(e)}")
         return jsonify({"success": False, "error": str(e)})
@@ -462,7 +462,7 @@ def get_workflow_status(workflow_id):
     try:
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
-
+            
             # If it's a WorkflowResult object
             if hasattr(workflow, "status"):
                 return jsonify(
@@ -480,7 +480,7 @@ def get_workflow_status(workflow_id):
                 return jsonify({"success": True, "status": workflow})
         else:
             return jsonify({"success": False, "error": "Workflow not found"})
-
+            
     except Exception as e:
         logger.error(f"Error getting workflow status: {str(e)}")
         return jsonify({"success": False, "error": str(e)})
@@ -492,7 +492,7 @@ def get_workflow_results(workflow_id):
     try:
         if workflow_id in active_workflows:
             workflow = active_workflows[workflow_id]
-
+            
             if hasattr(workflow, "final_output"):
                 return jsonify(
                     {
@@ -510,7 +510,7 @@ def get_workflow_results(workflow_id):
                 return jsonify({"success": False, "error": "Results not ready yet"})
         else:
             return jsonify({"success": False, "error": "Workflow not found"})
-
+            
     except Exception as e:
         logger.error(f"Error getting workflow results: {str(e)}")
         return jsonify({"success": False, "error": str(e)})
@@ -554,3 +554,4 @@ if __name__ == "__main__":
     )
 
     app.run(host=config.FLASK_HOST, port=config.FLASK_PORT, debug=config.FLASK_DEBUG)
+    
