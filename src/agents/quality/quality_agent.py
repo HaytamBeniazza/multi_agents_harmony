@@ -15,7 +15,7 @@ from ...core.config import config
 
 class QualityAgent(BaseAgent):
     """Agent responsible for quality assurance and content review"""
-    
+
     def __init__(self):
         super().__init__(
             name="QualityAgent",
@@ -26,21 +26,21 @@ class QualityAgent(BaseAgent):
             model_name=config.OPENAI_MODEL,
             openai_api_key=config.OPENAI_API_KEY,
         )
-        
+
     async def process(self, input_data: Dict[str, Any]) -> AgentResult:
         """Review and evaluate quality of work products"""
         start_time = time.time()
         self.update_status(AgentStatus.WORKING)
-        
+
         try:
             if not self.validate_input(input_data):
                 raise ValueError("Invalid input data")
-            
+
             topic = input_data["topic"]
             research_findings = input_data.get("research_findings", {})
             analysis_results = input_data.get("analysis_results", {})
             content_output = input_data.get("content_output", {})
-            
+
             # Perform quality assessments
             research_quality = await self._assess_research_quality(research_findings, topic)
             analysis_quality = await self._assess_analysis_quality(analysis_results, topic)
@@ -65,7 +65,7 @@ class QualityAgent(BaseAgent):
                 improvement_suggestions,
                 topic,
             )
-            
+
             result = AgentResult(
                 agent_name=self.name,
                 status=AgentStatus.COMPLETED,
@@ -92,11 +92,11 @@ class QualityAgent(BaseAgent):
                 execution_time=time.time() - start_time,
                 timestamp=datetime.now(),
             )
-            
+
             self.update_status(AgentStatus.COMPLETED)
             self.log_result(result)
             return result
-            
+
         except Exception as e:
             self.logger.error(f"Quality assessment failed: {str(e)}")
             result = AgentResult(
@@ -110,14 +110,14 @@ class QualityAgent(BaseAgent):
             self.update_status(AgentStatus.ERROR)
             self.log_result(result)
             return result
-    
+
     async def _assess_research_quality(
         self, research_findings: Dict[str, Any], topic: str
     ) -> Dict[str, Any]:
         """Assess quality of research findings"""
         main_findings = research_findings.get("main_findings", [])
         sources = research_findings.get("sources", [])
-        
+
         return {
             "completeness_score": min(len(main_findings) / 5.0, 1.0) * 100,
             "source_quality_score": min(len(sources) / 10.0, 1.0) * 100,
@@ -209,7 +209,7 @@ class QualityAgent(BaseAgent):
     ) -> List[Dict[str, Any]]:
         """Generate suggestions for improvement"""
         suggestions = []
-        
+
         # Research improvements
         if research_quality.get("overall_research_score", 0) < 90:
             suggestions.append(
@@ -242,9 +242,9 @@ class QualityAgent(BaseAgent):
                     "expected_impact": "Improved readability and engagement",
                 }
             )
-        
+
         return suggestions
-    
+
     def _generate_quality_report(
         self,
         research_quality: Dict[str, Any],
@@ -283,7 +283,7 @@ class QualityAgent(BaseAgent):
                 "Finalize for delivery",
             ],
         }
-    
+
     def get_capabilities(self) -> Dict[str, Any]:
         """Return agent capabilities"""
         return {
@@ -293,7 +293,7 @@ class QualityAgent(BaseAgent):
             "improvement_tracking": True,
             "automated_approval": True,
         }
-    
+
     def get_required_fields(self) -> List[str]:
         """Return required input fields"""
         return ["topic"]
