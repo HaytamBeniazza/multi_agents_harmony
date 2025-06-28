@@ -43,7 +43,7 @@ Level 4 Multi-Agent Collaboration System
     
     console.print(Panel(
         welcome_text.strip(),
-        title="🚀 Talent Performer AI Engineering Demo",
+        title="AI Engineering Demo",
         title_align="center",
         border_style="blue"
     ))
