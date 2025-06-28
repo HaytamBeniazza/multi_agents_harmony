@@ -1,8 +1,8 @@
 """
-Quality Agent - Quality Assurance and Review (Gemini-Powered)
+Quality Agent for the AI Research & Content Creation Team
+Reviews content quality and provides improvement suggestions
 """
 
-import asyncio
 import time
 from datetime import datetime
 from typing import Dict, Any, List
@@ -29,7 +29,7 @@ class QualityAgent(BaseAgent):
         try:
             content_to_review = input_data.get("report_content", {})
             topic = input_data.get("topic", "Unknown Topic")
-            
+
             # Perform quality assessment using Gemini
             quality_assessment = await self._assess_quality(content_to_review, topic)
 
@@ -72,7 +72,7 @@ class QualityAgent(BaseAgent):
 
     async def _assess_quality(self, content: Dict[str, Any], topic: str) -> Dict[str, Any]:
         """Assess content quality using Gemini AI"""
-        
+
         prompt = f"""Assess the quality of this research report on: "{topic}"
 
 Content to Review:
@@ -96,14 +96,14 @@ Format as structured evaluation."""
 
         try:
             assessment_text = await gemini_client.generate_content_async(prompt, max_tokens=config.MAX_TOKENS)
-            
+
             return {
                 "criteria_scores": {
                     "accuracy": 87,
                     "completeness": 83,
                     "clarity": 89,
                     "structure": 85,
-                    "actionability": 84
+                    "actionability": 84,
                 },
                 "overall_score": 85.6,
                 "quality_grade": "B+",
@@ -111,14 +111,14 @@ Format as structured evaluation."""
                     "Add more specific data points and statistics",
                     "Include additional industry examples",
                     "Strengthen the conclusion section",
-                    "Enhance visual presentation elements"
+                    "Enhance visual presentation elements",
                 ],
                 "summary": "High-quality research report with strong analysis and clear recommendations. Minor improvements suggested for enhanced impact.",
                 "assessment_text": assessment_text,
                 "meets_standards": True,
-                "confidence_level": 0.92
+                "confidence_level": 0.92,
             }
-            
+
         except Exception as e:
             self.logger.error(f"Failed to assess quality: {str(e)}")
             return {
@@ -127,18 +127,15 @@ Format as structured evaluation."""
                     "completeness": 75,
                     "clarity": 80,
                     "structure": 78,
-                    "actionability": 77
+                    "actionability": 77,
                 },
                 "overall_score": 78.0,
                 "quality_grade": "B",
-                "improvements": [
-                    "Standard quality review completed",
-                    "Manual review recommended"
-                ],
+                "improvements": ["Standard quality review completed", "Manual review recommended"],
                 "summary": "Quality assessment completed with limited AI processing.",
                 "assessment_text": "Quality review completed using fallback assessment.",
                 "meets_standards": True,
-                "confidence_level": 0.70
+                "confidence_level": 0.70,
             }
 
     def validate_input(self, input_data: Dict[str, Any]) -> bool:
@@ -148,7 +145,13 @@ Format as structured evaluation."""
     def get_capabilities(self) -> Dict[str, Any]:
         """Return agent capabilities"""
         return {
-            "quality_criteria": ["accuracy", "completeness", "clarity", "structure", "actionability"],
+            "quality_criteria": [
+                "accuracy",
+                "completeness",
+                "clarity",
+                "structure",
+                "actionability",
+            ],
             "scoring_system": "0-100 scale",
             "grading_system": "A+ to F",
             "improvement_suggestions": True,

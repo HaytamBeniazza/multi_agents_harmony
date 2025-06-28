@@ -1,8 +1,8 @@
 """
-Content Agent - Professional Report Creation (Gemini-Powered)
+Content Agent for the AI Research & Content Creation Team
+Creates structured reports and professional content from analyzed data
 """
 
-import asyncio
 import time
 from datetime import datetime
 from typing import Dict, Any, List
@@ -30,14 +30,16 @@ class ContentAgent(BaseAgent):
             topic = input_data.get("topic", "Unknown Topic")
             research_data = input_data.get("research_findings", {})
             analysis_data = input_data.get("analysis_results", {})
-            
+
             # Extract UI parameters that significantly impact results
             depth = input_data.get("depth", "medium")  # basic, medium, deep
             content_type = input_data.get("content_type", "comprehensive_report")  # summary, comprehensive_report, analysis
             target_audience = input_data.get("target_audience", "business_executives")
-            
+
             # Generate professional report using Gemini with depth/type customization
-            report_content = await self._generate_report(topic, research_data, analysis_data, depth, content_type, target_audience)
+            report_content = await self._generate_report(
+                topic, research_data, analysis_data, depth, content_type, target_audience
+            )
 
             result = AgentResult(
                 agent_name=self.name,
@@ -86,22 +88,26 @@ class ContentAgent(BaseAgent):
             "comprehensive_report": 1800,
             "analysis": 1200,
             "presentation": 800,
-            "executive_brief": 600
+            "executive_brief": 600,
         }
-        
-        depth_multipliers = {
-            "basic": 0.6,
-            "medium": 1.0, 
-            "deep": 1.8
-        }
-        
+
+        depth_multipliers = {"basic": 0.6, "medium": 1.0, "deep": 1.8}
+
         base = base_lengths.get(content_type, 1500)
         multiplier = depth_multipliers.get(depth, 1.0)
         return int(base * multiplier)
 
-    async def _generate_report(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any], depth: str, content_type: str, target_audience: str) -> Dict[str, Any]:
+    async def _generate_report(
+        self,
+        topic: str,
+        research_data: Dict[str, Any],
+        analysis_data: Dict[str, Any],
+        depth: str,
+        content_type: str,
+        target_audience: str,
+    ) -> Dict[str, Any]:
         """Generate customized report based on research depth and content type"""
-        
+
         # Create dramatically different prompts based on UI selections
         if content_type == "summary" and depth == "basic":
             return await self._generate_basic_summary(topic, research_data, analysis_data)
@@ -123,7 +129,9 @@ class ContentAgent(BaseAgent):
             # Default to medium comprehensive report
             return await self._generate_medium_report(topic, research_data, analysis_data)
 
-    async def _generate_basic_summary(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_basic_summary(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate a basic 300-word summary"""
         prompt = f"""Create a CONCISE SUMMARY on: "{topic}"
 
@@ -142,12 +150,18 @@ Style: Clear, direct, accessible language. Focus on essentials only."""
                 "title": f"Summary: {topic}",
                 "sections": ["Overview", "Key Points", "Recommendation"],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Basic Summary", "quality_level": "Standard"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Basic Summary",
+                    "quality_level": "Standard",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Basic Summary")
 
-    async def _generate_deep_report(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_deep_report(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate an ultra-comprehensive 3000+ word deep research report"""
         prompt = f"""Create an ULTRA-COMPREHENSIVE RESEARCH REPORT on: "{topic}"
 
@@ -233,14 +247,28 @@ Generate the most comprehensive, authoritative report that would receive 98+ qua
             report_text = await gemini_client.generate_content_async(prompt, max_tokens=1500)
             return {
                 "title": f"Comprehensive Research Report: {topic}",
-                "sections": ["Executive Summary", "Market Landscape", "Research Findings", "Analysis", "Recommendations", "Implementation", "Conclusion"],
+                "sections": [
+                    "Executive Summary",
+                    "Market Landscape",
+                    "Research Findings",
+                    "Analysis",
+                    "Recommendations",
+                    "Implementation",
+                    "Conclusion",
+                ],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Deep Research Report", "quality_level": "Expert"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Deep Research Report",
+                    "quality_level": "Expert",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Deep Research Report")
 
-    async def _generate_medium_summary(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_medium_summary(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate a medium 500-word summary with key insights"""
         prompt = f"""Create a COMPREHENSIVE SUMMARY on: "{topic}"
 
@@ -258,14 +286,25 @@ Style: Professional business language with specific data points and actionable i
             report_text = await gemini_client.generate_content_async(prompt, max_tokens=600)
             return {
                 "title": f"Executive Summary: {topic}",
-                "sections": ["Executive Overview", "Key Findings", "Strategic Implications", "Recommendations"],
+                "sections": [
+                    "Executive Overview",
+                    "Key Findings",
+                    "Strategic Implications",
+                    "Recommendations",
+                ],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Executive Summary", "quality_level": "High"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Executive Summary",
+                    "quality_level": "High",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Executive Summary")
 
-    async def _generate_basic_report(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_basic_report(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate a basic 800-word report"""
         prompt = f"""Create a BASIC RESEARCH REPORT on: "{topic}"
 
@@ -295,12 +334,18 @@ Style: Clear, professional, fact-based with practical focus."""
                 "title": f"Research Report: {topic}",
                 "sections": ["Introduction", "Key Findings", "Recommendations", "Conclusion"],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Basic Research Report", "quality_level": "Standard"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Basic Research Report",
+                    "quality_level": "Standard",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Basic Research Report")
 
-    async def _generate_medium_report(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_medium_report(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate the original A-grade medium report (1800 words)"""
         prompt = f"""Create an EXCEPTIONAL QUALITY professional research report on: "{topic}"
 
@@ -350,17 +395,30 @@ Generate a report that demonstrates C-suite level expertise and would receive a 
             report_text = await gemini_client.generate_content_async(prompt, max_tokens=config.MAX_TOKENS)
             return {
                 "title": f"Professional Research Report: {topic}",
-                "sections": ["Executive Summary", "Introduction", "Key Findings", "Analysis & Insights", "Recommendations", "Conclusion"],
+                "sections": [
+                    "Executive Summary",
+                    "Introduction",
+                    "Key Findings",
+                    "Analysis & Insights",
+                    "Recommendations",
+                    "Conclusion",
+                ],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Professional Research Report", "quality_level": "A-Grade"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Professional Research Report",
+                    "quality_level": "A-Grade",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Professional Research Report")
 
-    async def _generate_analysis_report(self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any], depth: str) -> Dict[str, Any]:
+    async def _generate_analysis_report(
+        self, topic: str, research_data: Dict[str, Any], analysis_data: Dict[str, Any], depth: str
+    ) -> Dict[str, Any]:
         """Generate an analytical report focused on insights and implications"""
         word_target = 1200 if depth == "medium" else (800 if depth == "basic" else 2000)
-        
+
         prompt = f"""Create an ANALYTICAL RESEARCH REPORT on: "{topic}"
 
 Target: {word_target} words focused on analysis and insights
@@ -393,9 +451,18 @@ Style: Analytical depth with quantitative rigor, focused on actionable business 
             report_text = await gemini_client.generate_content_async(prompt, max_tokens=min(word_target, config.MAX_TOKENS))
             return {
                 "title": f"Analytical Report: {topic}",
-                "sections": ["Situational Analysis", "Data Analysis", "Strategic Implications", "Actionable Insights"],
+                "sections": [
+                    "Situational Analysis",
+                    "Data Analysis",
+                    "Strategic Implications",
+                    "Actionable Insights",
+                ],
                 "full_report": report_text,
-                "metadata": {"generated_by": "Gemini AI", "report_type": "Analytical Report", "quality_level": "Analytical"}
+                "metadata": {
+                    "generated_by": "Gemini AI",
+                    "report_type": "Analytical Report",
+                    "quality_level": "Analytical",
+                },
             }
         except Exception as e:
             return self._fallback_content(topic, "Analytical Report")
@@ -406,7 +473,11 @@ Style: Analytical depth with quantitative rigor, focused on actionable business 
             "title": f"{report_type}: {topic}",
             "sections": ["Summary", "Analysis", "Recommendations"],
             "full_report": f"Professional {report_type.lower()} on {topic} - generated with limited AI processing.",
-            "metadata": {"generated_by": "Gemini AI (Fallback)", "report_type": report_type, "quality_level": "Standard"}
+            "metadata": {
+                "generated_by": "Gemini AI (Fallback)",
+                "report_type": report_type,
+                "quality_level": "Standard",
+            },
         }
 
     def validate_input(self, input_data: Dict[str, Any]) -> bool:

@@ -1,8 +1,8 @@
 """
-Analysis Agent - Data Processing and Insight Generation (Gemini-Powered)
+Analysis Agent for the AI Research & Content Creation Team
+Processes research findings and generates analytical insights
 """
 
-import asyncio
 import time
 from datetime import datetime
 from typing import Dict, Any, List
@@ -71,7 +71,7 @@ class AnalysisAgent(BaseAgent):
 
     async def _analyze_data(self, research_data: Dict[str, Any], topic: str) -> Dict[str, Any]:
         """Perform A-grade strategic analysis using Gemini AI"""
-        
+
         prompt = f"""Perform COMPREHENSIVE STRATEGIC ANALYSIS for: "{topic}"
 
 Research Data to Analyze:
@@ -131,34 +131,34 @@ Generate analysis that demonstrates deep strategic thinking, quantitative rigor,
 
         try:
             analysis_text = await gemini_client.generate_content_async(prompt, max_tokens=config.MAX_TOKENS)
-            
+
             return {
                 "insights": [
                     "Strategic insight 1: Market positioning analysis",
-                    "Strategic insight 2: Competitive advantage identification", 
-                    "Strategic insight 3: Growth opportunity assessment"
+                    "Strategic insight 2: Competitive advantage identification",
+                    "Strategic insight 3: Growth opportunity assessment",
                 ],
                 "patterns": [
                     "Pattern 1: Emerging market trends",
-                    "Pattern 2: User behavior shifts"
+                    "Pattern 2: User behavior shifts",
                 ],
                 "recommendations": [
                     "Recommendation 1: Strategic initiative",
                     "Recommendation 2: Process optimization",
-                    "Recommendation 3: Resource allocation"
+                    "Recommendation 3: Resource allocation",
                 ],
                 "risks": [
                     "Risk 1: Market volatility concerns",
-                    "Risk 2: Technology disruption potential"
+                    "Risk 2: Technology disruption potential",
                 ],
                 "opportunities": [
                     "Opportunity 1: Market expansion potential",
-                    "Opportunity 2: Technology advancement leverage"
+                    "Opportunity 2: Technology advancement leverage",
                 ],
                 "analysis_text": analysis_text,
-                "confidence_score": 0.85
+                "confidence_score": 0.85,
             }
-            
+
         except Exception as e:
             self.logger.error(f"Failed to analyze data: {str(e)}")
             return {
@@ -168,7 +168,7 @@ Generate analysis that demonstrates deep strategic thinking, quantitative rigor,
                 "risks": ["Standard market risks apply"],
                 "opportunities": ["Opportunities under review"],
                 "analysis_text": "Analysis completed with limited AI processing",
-                "confidence_score": 0.60
+                "confidence_score": 0.60,
             }
 
     def validate_input(self, input_data: Dict[str, Any]) -> bool:

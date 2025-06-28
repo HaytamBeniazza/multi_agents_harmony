@@ -16,19 +16,19 @@ class Config:
     # Google Gemini Configuration (Primary AI Provider)
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBn_YyzcsyZ7HHIvEEZ04Tu2gqnpOL-0uo")
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-    
+
     # OpenAI/OpenRouter Configuration (Backup)
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
     OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
     OPENAI_MODEL = os.getenv("OPENAI_MODEL", "openai/gpt-4-turbo-preview")
     OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
-    
+
     # AI Provider Selection
     AI_PROVIDER = os.getenv("AI_PROVIDER", "gemini")  # "gemini" or "openai"
-    
+
     # Token Management - Optimized for fast responses
     MAX_TOKENS = int(os.getenv("MAX_TOKENS", "800"))  # Conservative limit for speed
-    
+
     # OpenRouter specific settings
     HTTP_REFERER = os.getenv("HTTP_REFERER", "https://github.com/HaytamBeniazza/multi_agents_harmony")
     X_TITLE = os.getenv("X_TITLE", "AI Research & Content Creation Team")
@@ -36,14 +36,14 @@ class Config:
     # Web Scraping Configuration
     USER_AGENT = os.getenv(
         "USER_AGENT",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     )
     REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "30"))
     MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 
     # Agent Configuration
     MAX_RESEARCH_SOURCES = int(os.getenv("MAX_RESEARCH_SOURCES", "3"))  # Reduced from 5
-    MIN_CONTENT_LENGTH = int(os.getenv("MIN_CONTENT_LENGTH", "500"))     # Reduced from 1000
+    MIN_CONTENT_LENGTH = int(os.getenv("MIN_CONTENT_LENGTH", "500"))  # Reduced from 1000
     QUALITY_THRESHOLD = float(os.getenv("QUALITY_THRESHOLD", "0.8"))
 
     # Web Interface Configuration

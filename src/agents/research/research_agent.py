@@ -1,11 +1,12 @@
 """
-Research Agent - Web Search and Information Gathering (Gemini-Powered)
+Research Agent for the AI Research & Content Creation Team
+Handles web search and information gathering tasks
 """
 
-import asyncio
 import time
-from datetime import datetime
 from typing import Dict, Any, List
+from urllib.parse import quote
+from datetime import datetime
 
 from agents.base.base_agent import BaseAgent, AgentResult, AgentStatus
 from core.config import config
@@ -18,7 +19,7 @@ class ResearchAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             name="ResearchAgent",
-            description="Searches web for information and gathers relevant data on specified topics using Google Gemini",
+            description="Searches web for information and gathers relevant data on specified " "topics using Google Gemini",
         )
 
     async def process(self, input_data: Dict[str, Any]) -> AgentResult:
@@ -126,19 +127,19 @@ Return only the search queries, one per line."""
             mock_results = [
                 {
                     "title": f"Research on {query} - Academic Source",
-                    "url": f"https://academic-source.com/search?q={query.replace(' ', '+')}",
+                    "url": f"https://academic-source.com/search?q={quote(query)}",
                     "snippet": f"Comprehensive research findings on {query} from academic sources...",
                     "source_type": "academic",
                 },
                 {
                     "title": f"{query} - Industry Report",
-                    "url": f"https://industry-report.com/topics/{query.replace(' ', '-')}",
+                    "url": f"https://industry-report.com/topics/{quote(query)}",
                     "snippet": f"Industry insights and analysis on {query} with current trends...",
                     "source_type": "industry",
                 },
                 {
                     "title": f"News about {query}",
-                    "url": f"https://news-source.com/articles/{query.replace(' ', '-')}",
+                    "url": f"https://news-source.com/articles/{quote(query)}",
                     "snippet": f"Latest news and developments regarding {query}...",
                     "source_type": "news",
                 },
@@ -150,9 +151,7 @@ Return only the search queries, one per line."""
             self.logger.error(f"Web search failed for query '{query}': {str(e)}")
             return []
 
-    async def _process_search_results(
-        self, results: List[Dict[str, Any]], topic: str
-    ) -> Dict[str, Any]:
+    async def _process_search_results(self, results: List[Dict[str, Any]], topic: str) -> Dict[str, Any]:
         """Process and extract relevant content from search results"""
         processed_content: Dict[str, Any] = {
             "key_points": [],
@@ -228,24 +227,21 @@ Generate a detailed synthesis that provides concrete, actionable data for creati
 
         try:
             synthesis_text = await gemini_client.generate_content_async(prompt, max_tokens=config.MAX_TOKENS)
-            
+
             # Parse the synthesis into structured format
             return {
                 "executive_summary": "AI-generated synthesis of research findings",
                 "main_findings": [
                     "Finding 1: Key insight from research",
-                    "Finding 2: Important trend identified", 
-                    "Finding 3: Critical development noted"
+                    "Finding 2: Important trend identified",
+                    "Finding 3: Critical development noted",
                 ],
-                "key_trends": [
-                    "Trend 1: Emerging pattern",
-                    "Trend 2: Market direction"
-                ],
+                "key_trends": ["Trend 1: Emerging pattern", "Trend 2: Market direction"],
                 "recommendations": [
                     "Recommendation 1: Strategic action",
-                    "Recommendation 2: Implementation step"
+                    "Recommendation 2: Implementation step",
                 ],
-                "synthesis_text": synthesis_text
+                "synthesis_text": synthesis_text,
             }
         except Exception as e:
             self.logger.error(f"Failed to synthesize findings: {str(e)}")
@@ -254,7 +250,7 @@ Generate a detailed synthesis that provides concrete, actionable data for creati
                 "main_findings": ["Research data collected and processed"],
                 "key_trends": ["Analysis in progress"],
                 "recommendations": ["Further investigation recommended"],
-                "synthesis_text": "Research synthesis completed with limited AI processing"
+                "synthesis_text": "Research synthesis completed with limited AI processing",
             }
 
     def validate_input(self, input_data: Dict[str, Any]) -> bool:

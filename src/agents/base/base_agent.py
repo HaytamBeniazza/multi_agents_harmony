@@ -63,14 +63,12 @@ class BaseAgent(ABC):
         """
         Main processing method - must be implemented by each agent
         """
-        pass
 
     @abstractmethod
     def get_capabilities(self) -> Dict[str, Any]:
         """
         Return agent capabilities and requirements
         """
-        pass
 
     def update_status(self, status: AgentStatus):
         """Update agent status"""
@@ -98,7 +96,6 @@ class BaseAgent(ABC):
     @abstractmethod
     def get_required_fields(self) -> List[str]:
         """Return list of required input fields"""
-        pass
 
     def log_result(self, result: AgentResult):
         """Log and store agent result"""

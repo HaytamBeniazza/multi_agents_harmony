@@ -4,19 +4,20 @@ Web Interface for AI Research & Content Creation Team
 
 import sys
 import os
-
-# Add the src directory to Python path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../'))
-
-from flask import Flask, render_template_string, request, jsonify, session
-from flask_cors import CORS
-import asyncio
-import json
-from datetime import datetime
+import uuid
 import threading
 import time
 
-from core.orchestrator import AgentOrchestrator, WorkflowStatus
+# Add the src directory to Python path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../"))
+
+from flask import Flask, render_template_string, request, jsonify
+from flask_cors import CORS
+import asyncio
+import threading
+import time
+
+from core.orchestrator import AgentOrchestrator
 from core.config import config
 import logging
 
@@ -515,8 +516,6 @@ def start_workflow():
             return jsonify({"success": False, "error": "Topic is required"})
 
         # Create a temporary workflow entry
-        import uuid
-
         workflow_id = str(uuid.uuid4())
         active_workflows[workflow_id] = {
             "status": "running",

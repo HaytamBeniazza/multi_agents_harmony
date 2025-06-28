@@ -2,11 +2,10 @@
 Agent Orchestrator - Multi-Agent Collaboration System
 """
 
-import asyncio
 import time
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List, Optional, cast
+from typing import Dict, Any, Optional, cast
 from dataclasses import dataclass
 from enum import Enum
 
@@ -16,7 +15,6 @@ from agents import (
     ContentAgent,
     QualityAgent,
     AgentStatus,
-    AgentMessage,
     AgentResult,
 )
 from core.config import config
@@ -106,9 +104,7 @@ class AgentOrchestrator:
             agent_results["research"] = research_result
 
             if research_result.status != AgentStatus.COMPLETED:
-                raise Exception(
-                    f"Research phase failed: {research_result.output.get('error', 'Unknown error')}"
-                )
+                raise Exception(f"Research phase failed: {research_result.output.get('error', 'Unknown error')}")
 
             # Step 2: Analysis Phase
             workflow_data["current_step"] = 2
@@ -124,9 +120,7 @@ class AgentOrchestrator:
             agent_results["analysis"] = analysis_result
 
             if analysis_result.status != AgentStatus.COMPLETED:
-                raise Exception(
-                    f"Analysis phase failed: {analysis_result.output.get('error', 'Unknown error')}"
-                )
+                raise Exception(f"Analysis phase failed: {analysis_result.output.get('error', 'Unknown error')}")
 
             # Step 3: Content Creation Phase
             workflow_data["current_step"] = 3
@@ -144,9 +138,7 @@ class AgentOrchestrator:
             agent_results["content"] = content_result
 
             if content_result.status != AgentStatus.COMPLETED:
-                raise Exception(
-                    f"Content creation phase failed: {content_result.output.get('error', 'Unknown error')}"
-                )
+                raise Exception(f"Content creation phase failed: {content_result.output.get('error', 'Unknown error')}")
 
             # Step 4: Quality Review Phase
             workflow_data["current_step"] = 4
@@ -162,24 +154,18 @@ class AgentOrchestrator:
             agent_results["quality"] = quality_result
 
             if quality_result.status != AgentStatus.COMPLETED:
-                raise Exception(
-                    f"Quality review phase failed: {quality_result.output.get('error', 'Unknown error')}"
-                )
+                raise Exception(f"Quality review phase failed: {quality_result.output.get('error', 'Unknown error')}")
 
             # Check if content meets quality threshold
             quality_score = quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0))
             if quality_score < config.QUALITY_THRESHOLD:
-                logger.warning(
-                    f"Workflow {workflow_id}: Content quality below threshold, considering revision"
-                )
+                logger.warning(f"Workflow {workflow_id}: Content quality below threshold, considering revision")
 
                 # In a production system, you might implement automatic revision here
                 # For now, we'll include the quality feedback in the final output
 
             # Compile final output
-            final_output = self._compile_final_output(
-                topic, research_result, analysis_result, content_result, quality_result
-            )
+            final_output = self._compile_final_output(topic, research_result, analysis_result, content_result, quality_result)
 
             # Generate execution summary
             execution_summary = self._generate_execution_summary(workflow_data)
@@ -196,9 +182,7 @@ class AgentOrchestrator:
             )
 
             workflow_data["status"] = WorkflowStatus.COMPLETED
-            logger.info(
-                f"Workflow {workflow_id} completed successfully in {workflow_result.total_execution_time:.2f} seconds"
-            )
+            logger.info(f"Workflow {workflow_id} completed successfully in {workflow_result.total_execution_time:.2f} seconds")
 
             return workflow_result
 
@@ -242,10 +226,18 @@ class AgentOrchestrator:
                 "execution_time": research_result.execution_time,
             },
             "analysis_phase": {
-                "insights": analysis_result.output.get("analysis_results", {}).get("insights", analysis_result.output.get("analytical_insights", [])),
-                "trends": analysis_result.output.get("analysis_results", {}).get("key_trends", analysis_result.output.get("trend_analysis", [])),
-                "recommendations": analysis_result.output.get("analysis_results", {}).get("recommendations", analysis_result.output.get("recommendations", [])),
-                "confidence_score": analysis_result.output.get("analysis_results", {}).get("confidence_score", analysis_result.output.get("confidence_score", 0.8)),
+                "insights": analysis_result.output.get("analysis_results", {}).get(
+                    "insights", analysis_result.output.get("analytical_insights", [])
+                ),
+                "trends": analysis_result.output.get("analysis_results", {}).get(
+                    "key_trends", analysis_result.output.get("trend_analysis", [])
+                ),
+                "recommendations": analysis_result.output.get("analysis_results", {}).get(
+                    "recommendations", analysis_result.output.get("recommendations", [])
+                ),
+                "confidence_score": analysis_result.output.get("analysis_results", {}).get(
+                    "confidence_score", analysis_result.output.get("confidence_score", 0.8)
+                ),
                 "execution_time": analysis_result.execution_time,
             },
             "content_phase": {
@@ -254,24 +246,36 @@ class AgentOrchestrator:
                 "execution_time": content_result.execution_time,
             },
             "quality_phase": {
-                "quality_score": quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0)),
-                "quality_assessment": quality_result.output.get("quality_assessment", quality_result.output.get("quality_report", {})),
+                "quality_score": quality_result.output.get(
+                    "overall_score", quality_result.output.get("overall_quality_score", 0)
+                ),
+                "quality_assessment": quality_result.output.get(
+                    "quality_assessment", quality_result.output.get("quality_report", {})
+                ),
                 "quality_grade": quality_result.output.get("quality_grade", "B+"),
-                "improvement_suggestions": quality_result.output.get("quality_assessment", {}).get("improvements", quality_result.output.get("improvement_suggestions", [])),
+                "improvement_suggestions": quality_result.output.get("quality_assessment", {}).get(
+                    "improvements", quality_result.output.get("improvement_suggestions", [])
+                ),
                 "execution_time": quality_result.execution_time,
             },
             "workflow_metadata": {
                 "total_sources_analyzed": len(research_result.output.get("sources", [])),
-                "total_recommendations": len(analysis_result.output.get("analysis_results", {}).get("recommendations", analysis_result.output.get("recommendations", []))),
-                "final_word_count": content_result.output.get("word_count", content_result.output.get("metadata", {}).get("word_count", 0)),
-                "overall_quality_score": quality_result.output.get("overall_score", quality_result.output.get("overall_quality_score", 0)),
+                "total_recommendations": len(
+                    analysis_result.output.get("analysis_results", {}).get(
+                        "recommendations", analysis_result.output.get("recommendations", [])
+                    )
+                ),
+                "final_word_count": content_result.output.get(
+                    "word_count", content_result.output.get("metadata", {}).get("word_count", 0)
+                ),
+                "overall_quality_score": quality_result.output.get(
+                    "overall_score", quality_result.output.get("overall_quality_score", 0)
+                ),
                 "generated_timestamp": datetime.now().isoformat(),
             },
         }
 
-    def _compile_partial_output(
-        self, agent_results: Dict[str, AgentResult], error: str
-    ) -> Dict[str, Any]:
+    def _compile_partial_output(self, agent_results: Dict[str, AgentResult], error: str) -> Dict[str, Any]:
         """Compile partial output when workflow fails"""
         output: Dict[str, Any] = {
             "status": "failed",
@@ -308,16 +312,15 @@ class AgentOrchestrator:
                 for agent_name, result in agent_results.items()
             },
             "success_rate": (
-                len([r for r in agent_results.values() if r.status == AgentStatus.COMPLETED])
-                / len(agent_results)
+                len([r for r in agent_results.values() if r.status == AgentStatus.COMPLETED]) / len(agent_results)
                 if agent_results
                 else 0
             ),
             "quality_metrics": {
                 "research_sources": len(
-                    agent_results.get(
-                        "research", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                    ).output.get("sources", [])
+                    agent_results.get("research", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())).output.get(
+                        "sources", []
+                    )
                 ),
                 "analysis_insights": len(
                     str(
@@ -327,17 +330,16 @@ class AgentOrchestrator:
                         ).output.get("analytical_insights", {})
                     )
                 ),
-                "content_word_count": agent_results.get(
-                    "content", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                )
+                "content_word_count": agent_results.get("content", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now()))
                 .output.get("metadata", {})
                 .get("word_count", 0),
                 "final_quality_score": agent_results.get(
                     "quality", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                ).output.get("overall_score", 
-                    agent_results.get(
-                        "quality", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())
-                    ).output.get("overall_quality_score", 0)
+                ).output.get(
+                    "overall_score",
+                    agent_results.get("quality", AgentResult("", AgentStatus.ERROR, {}, {}, 0, datetime.now())).output.get(
+                        "overall_quality_score", 0
+                    ),
                 ),
             },
         }
@@ -354,9 +356,7 @@ class AgentOrchestrator:
         """Get overall system performance metrics"""
         return {
             "total_workflows_executed": len(self.active_workflows),
-            "agent_metrics": {
-                agent_name: agent.get_metrics() for agent_name, agent in self.agents.items()
-            },
+            "agent_metrics": {agent_name: agent.get_metrics() for agent_name, agent in self.agents.items()},
             "system_status": "operational",
             "last_updated": datetime.now().isoformat(),
         }

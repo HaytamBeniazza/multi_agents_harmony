@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 130
+max-complexity = 15
+extend-ignore = E203,W503,W291,W293,F841
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    build,
+    dist,
+    *.egg-info
+per-file-ignores =
+    src/interfaces/web/app.py:E402,F811,E501
+    src/interfaces/cli/demo.py:C901
+    src/agents/analysis/analysis_agent.py:E501
+    src/agents/quality/quality_agent.py:E501
+    src/agents/research/research_agent.py:E501 
