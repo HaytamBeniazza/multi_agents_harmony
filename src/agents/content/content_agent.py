@@ -126,7 +126,7 @@ class ContentAgent(BaseAgent):
         sections.append(intro)
 
         # Research findings section
-        research_section = {
+        research_section: Dict[str, Any] = {
             "title": f"Research Findings on {topic}",
             "content": f"Our comprehensive research on {topic} reveals several key findings.",
             "subsections": [
@@ -147,7 +147,7 @@ class ContentAgent(BaseAgent):
         sections.append(research_section)
 
         # Analysis section
-        analysis_section = {
+        analysis_section: Dict[str, Any] = {
             "title": f"Analysis and Insights on {topic}",
             "content": f"Deep analysis of the research findings reveals important patterns and implications for {topic}.",
             "subsections": [

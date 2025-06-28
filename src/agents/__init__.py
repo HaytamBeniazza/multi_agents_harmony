@@ -5,6 +5,7 @@ This package contains specialized AI agents for research, analysis, content crea
 Each agent is designed to work independently or as part of a collaborative workflow.
 """
 
+from typing import Type, Dict
 from .base import BaseAgent, AgentStatus, AgentMessage, AgentResult
 from .research import ResearchAgent
 from .analysis import AnalysisAgent
@@ -26,7 +27,7 @@ __all__ = [
 ]
 
 # Agent registry for dynamic loading
-AGENT_REGISTRY = {
+AGENT_REGISTRY: Dict[str, Type[BaseAgent]] = {
     "research": ResearchAgent,
     "analysis": AnalysisAgent,
     "content": ContentAgent,
