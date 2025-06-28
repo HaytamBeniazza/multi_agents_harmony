@@ -3,7 +3,6 @@ Basic tests for the AI Agents System
 """
 
 import pytest
-from unittest.mock import Mock, patch
 import os
 import sys
 
