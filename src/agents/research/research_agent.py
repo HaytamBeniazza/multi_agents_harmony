@@ -119,7 +119,7 @@ Return only the search queries, one per line."""
         """Perform web search for a given query"""
         # NOTE: This is a DEMO/SIMULATION implementation
         # In production, integrate with real search APIs (Google, Bing, DuckDuckGo, etc.)
-        
+
         try:
             # Demo simulation with clearly marked placeholder sources
             mock_results = [
@@ -131,7 +131,7 @@ Return only the search queries, one per line."""
                 },
                 {
                     "title": f"Industry Analysis: {query}",
-                    "url": "[DEMO] Industry report simulation - no real URL", 
+                    "url": "[DEMO] Industry report simulation - no real URL",
                     "snippet": f"Industry insights and market analysis on {query} with current trends and data...",
                     "source_type": "industry",
                 },
